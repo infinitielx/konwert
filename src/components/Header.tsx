@@ -8,7 +8,7 @@ import { logout } from "@/app/login/actions";
 const links = [
   { href: "/", label: "Live Status" },
   { href: "/history", label: "History" },
-  { href: "/docs", label: "Docs" },
+  // /docs still works but is not linked here; open it by typing the URL.
 ];
 
 export default function Header() {
