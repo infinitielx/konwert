@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireUser } from "@/lib/guard";
 import { notFound } from "next/navigation";
 import { byId, fmtDateTime, secs } from "@/lib/records";
 import SsrIcon from "@/components/SsrIcon";
@@ -35,6 +36,7 @@ function VoltCard({ label, mv }: { label: string; mv: number }) {
 }
 
 export default async function Detail({ params }: { params: Promise<{ id: string }> }) {
+  await requireUser();
   const id = parseInt((await params).id, 10);
   if (!Number.isFinite(id)) notFound();
   const r = await byId(id);

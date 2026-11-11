@@ -56,8 +56,10 @@
   .btn-ghost { @apply inline-block rounded-md bg-charcoal px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-black dark:bg-slate-600 dark:hover:bg-slate-500; }
   .btn-gold { @apply inline-block rounded-md bg-gold-500 px-3.5 py-1.5 text-sm font-semibold text-brand-900 transition hover:bg-gold-600; }
   .tbl { @apply w-full border-collapse text-sm; }
-  .tbl th { @apply whitespace-nowrap border-b border-line bg-tint px-3 py-2.5 text-left font-semibold text-heading; }
-  .tbl td { @apply whitespace-nowrap border-b border-line px-3 py-2.5 text-left; }
+  .tbl th { @apply whitespace-nowrap border-b border-line bg-tint px-2 py-2.5 text-left font-semibold text-heading sm:px-2.5; }
+  .tbl td { @apply whitespace-nowrap border-b border-line px-2 py-2.5 text-left sm:px-2.5; }
+  .tbl-wrap th, .tbl-wrap td { white-space: normal; }
+  .tbl-wrap code { overflow-wrap: anywhere; }
   .field { @apply rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-700; }
   .ok { @apply font-bold text-green-700 dark:text-green-400; }
   .bad { @apply font-bold text-red-600 dark:text-red-400; }

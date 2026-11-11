@@ -2,12 +2,14 @@ import AutoRefresh from "@/components/AutoRefresh";
 import LiveTable from "@/components/LiveTable";
 import { LiveClock } from "@/components/TimeAgo";
 import { recent, type Rec } from "@/lib/records";
+import { requireUser } from "@/lib/guard";
 
 export const dynamic = "force-dynamic";
 
 const LIMIT = 15;
 
 export default async function LiveStatus() {
+  await requireUser();
   let recs: Rec[] = [];
   let error = "";
   try {

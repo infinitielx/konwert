@@ -1,4 +1,5 @@
 import CopyButton from "@/components/CopyButton";
+import { requireUser } from "@/lib/guard";
 import { VOLTAGE_AFFECTS_OVERALL, VOLT_MAX_V, VOLT_MIN_V, VOLT_PASS_MIN_V } from "@/lib/config";
 
 export const metadata = { title: "API DOCS" };
@@ -55,7 +56,8 @@ function Code({ children }: { children: string }) {
   );
 }
 
-export default function Docs() {
+export default async function Docs() {
+  await requireUser();
   return (
     <>
       <h1 className="mb-1 text-2xl font-bold">API Docs</h1>
@@ -78,9 +80,9 @@ export default function Docs() {
           <p className="mb-3 text-sm text-muted">{e.summary}</p>
           <p className="mb-3 text-sm">
             <span className="mr-2 rounded pill-pass px-2 py-0.5 font-bold">GET</span>
-            <code>{BASE}{e.path}</code>
+            <code className="break-all">{BASE}{e.path}</code>
           </p>
-          <table className="tbl mb-4">
+          <table className="tbl tbl-wrap mb-4">
             <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
             <tbody>
               {e.params.map(([n, t, d]) => (
@@ -101,7 +103,7 @@ export default function Docs() {
 
       <div className="card !p-5">
         <h2 className="mb-2 font-bold">Pass / fail rules</h2>
-        <table className="tbl">
+        <table className="tbl tbl-wrap">
           <thead><tr><th>Check</th><th>Rule</th></tr></thead>
           <tbody>
             <tr><td>Voltage range</td><td className="!whitespace-normal">{VOLT_MIN_V} V to {VOLT_MAX_V} V. A reading above {VOLT_MAX_V} V is shown as over range and fails.</td></tr>
@@ -114,7 +116,7 @@ export default function Docs() {
 
       <div className="card !p-5">
         <h2 className="mb-2 font-bold">Responses</h2>
-        <table className="tbl">
+        <table className="tbl tbl-wrap">
           <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
           <tbody>
             <tr><td>200</td><td>Saved (body is <code>OK</code>)</td></tr>
@@ -127,7 +129,7 @@ export default function Docs() {
 
       <div className="card !p-5">
         <h2 className="mb-2 font-bold">Other endpoints</h2>
-        <table className="tbl">
+        <table className="tbl tbl-wrap">
           <thead><tr><th>URL</th><th>Description</th></tr></thead>
           <tbody>
             <tr><td><code>/api/export?sno=&amp;from=&amp;to=</code></td><td>CSV download. All filters optional, dates as YYYY-MM-DD.</td></tr>

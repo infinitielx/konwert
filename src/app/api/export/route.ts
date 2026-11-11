@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { getUser } from "@/lib/guard";
 import { exportAll, fmtDateTime, parseSort, parseStatus } from "@/lib/records";
 
 export const dynamic = "force-dynamic";
@@ -6,6 +7,7 @@ export const dynamic = "force-dynamic";
 const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
 
 export async function GET(req: NextRequest) {
+  if (!(await getUser())) return new Response("Unauthorized", { status: 401 });
   const p = req.nextUrl.searchParams;
   try {
     const rows = await exportAll({

@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import type { Rec } from "@/lib/records";
 import { fmtDateTime, secs } from "@/lib/format";
 import SsrIcon from "./SsrIcon";
-import VoltGauge from "./VoltGauge";
 import { TimeAgo } from "./TimeAgo";
+import VoltGauge from "./VoltGauge";
 
 type Key =
   | "sno" | "testby" | "pass" | "created_at" | "voutm" | "vout_a"
@@ -22,6 +22,16 @@ function compare(a: Rec, b: Rec, key: Key) {
     default: return a[key] - b[key];
   }
 }
+
+// Choices for the sort menu shown on phones (wide screens click the column headings).
+const SORT_OPTIONS: [Key, string][] = [
+  ["created_at", "Test time"],
+  ["sno", "Serial No"],
+  ["pass", "Overall status"],
+  ["voutm", "VoutM"],
+  ["vout_a", "VoutA"],
+  ["delay", "Delay"],
+];
 
 export default function LiveTable({ recs, limit }: { recs: Rec[]; limit: number }) {
   // No sort selected = the server order (newest first).
@@ -81,7 +91,7 @@ export default function LiveTable({ recs, limit }: { recs: Rec[]; limit: number 
     <>
       <div className="card flex flex-wrap items-center gap-2.5">
         <input
-          className="field"
+          className="field min-w-0 flex-1 basis-48"
           placeholder="Search serial or tested by"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -99,6 +109,37 @@ export default function LiveTable({ recs, limit }: { recs: Rec[]; limit: number 
             <option value="fail">FAIL</option>
           </select>
         </label>
+
+        {/* Phones and tablets: sort menu (the column headings are not shown there). */}
+        <div className="flex w-full items-center gap-2 text-sm xl:hidden">
+          <label className="flex min-w-0 flex-1 items-center gap-1.5">
+            <span className="shrink-0">Sort</span>
+            <select
+              className="field min-w-0 flex-1"
+              value={sort?.key ?? ""}
+              onChange={(e) => {
+                const k = e.target.value as Key | "";
+                setSort(k ? { key: k, dir: k === "sno" ? "asc" : "desc" } : null);
+              }}
+              aria-label="Sort by"
+            >
+              <option value="">Newest first</option>
+              {SORT_OPTIONS.map(([k, label]) => (
+                <option key={k} value={k}>{label}</option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="btn-ghost cursor-pointer disabled:opacity-50"
+            disabled={!sort}
+            onClick={() => setSort((s) => (s ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : s))}
+            aria-label={sort?.dir === "asc" ? "Ascending, tap for descending" : "Descending, tap for ascending"}
+          >
+            {sort?.dir === "asc" ? "\u25B2 Asc" : "\u25BC Desc"}
+          </button>
+        </div>
+
         {(sort || filtered) && (
           <button
             type="button"
@@ -108,12 +149,62 @@ export default function LiveTable({ recs, limit }: { recs: Rec[]; limit: number 
             Reset
           </button>
         )}
-        <span className="ml-auto text-xs text-muted">
-          {rows.length} of {recs.length} shown. Click a column heading to sort.
+        <span className="text-xs text-muted xl:ml-auto">
+          {rows.length} of {recs.length} shown
+          <span className="hidden xl:inline">. Click a column heading to sort.</span>
         </span>
       </div>
 
-      <div className="card">
+      {/* Phones and tablets: one card per record (1, 2 or 3 columns) */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:hidden">
+        {rows.map((rec) => (
+          <article key={rec.id} className="rounded-xl bg-surface p-4 shadow-sm ring-1 ring-line">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="truncate text-base font-bold">{rec.sno}</h3>
+                <p className="text-xs text-muted">
+                  {rec.testby ?? "-"} &middot; <TimeAgo iso={rec.created_at} />
+                </p>
+              </div>
+              <span className={`shrink-0 rounded px-3 py-1 text-sm font-bold ${rec.pass ? "pill-pass" : "pill-fail"}`}>
+                {rec.pass ? "PASS" : "FAIL"}
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted">{fmtDateTime(rec.created_at)}</p>
+
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-2 rounded-lg bg-tint p-2">
+                <VoltGauge label="VoutM" mv={rec.voutm} size={56} />
+                <span className="text-xs font-semibold text-muted">VoutM<br />(volts)</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg bg-tint p-2">
+                <VoltGauge label="VoutA" mv={rec.vout_a} size={56} />
+                <span className="text-xs font-semibold text-muted">VoutA<br />(volts)</span>
+              </div>
+            </div>
+
+            <div className="mt-3 grid grid-cols-4 gap-2 text-center">
+              {[rec.ssr_1, rec.ssr_2, rec.ssr_3, rec.ssr_4].map((v, i) => (
+                <div key={i} className="flex flex-col items-center gap-1 rounded-lg bg-tint py-2">
+                  <span className="text-[11px] font-semibold text-muted">SSR {i + 1}</span>
+                  <SsrIcon n={i + 1} value={v} />
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <span className="text-sm text-muted">Delay {secs(rec.delay)}</span>
+              <Link className="btn" href={`/test/${rec.id}`}>View</Link>
+            </div>
+          </article>
+        ))}
+        {rows.length === 0 && (
+          <p className="card col-span-full text-center text-sm">{recs.length === 0 ? "No data yet" : "No records match the filter"}</p>
+        )}
+      </div>
+
+      {/* Laptops and desktops: the sortable table */}
+      <div className="card hidden xl:block">
         <table className="tbl">
           <thead>
             <tr>
@@ -157,11 +248,12 @@ export default function LiveTable({ recs, limit }: { recs: Rec[]; limit: number 
             )}
           </tbody>
         </table>
-        <p className="px-3 pt-3 text-xs text-muted">
-          Showing the latest {limit} records.{" "}
-          <Link className="text-accent underline" href="/history">See all in History</Link>
-        </p>
       </div>
+
+      <p className="px-1 text-xs text-muted">
+        Showing the latest {limit} records.{" "}
+        <Link className="text-accent underline" href="/history">See all in History</Link>
+      </p>
     </>
   );
 }

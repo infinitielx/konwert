@@ -11,6 +11,7 @@ Live site: https://jig.konwertindiamotors.com
 - **Detailed report**: one test with general information, SSR 1 to 4, delay and voltage gauges.
 - **PDF report**: generated on the company letterhead (`assets/letter_head.pdf`).
 - **API docs**: the `/docs` page lists the jig endpoints and the Arduino settings.
+- **Login**: every page and download needs a signed-in session (7 days). A Sign out button sits after the theme toggle.
 - **Light and dark theme** with a toggle in the header.
 
 ## Tech stack
@@ -35,10 +36,17 @@ Open http://localhost:3000.
 |---|---|---|
 | `MONGODB_URI` | yes | MongoDB connection string |
 | `MONGODB_DB` | no | Database name. Defaults to `konwert_jig`. Use `konwert_jig_dev` locally. |
+| `AUTH_USERNAME` | yes | Dashboard login username |
+| `AUTH_PASSWORD` | yes | Dashboard login password. Put it in double quotes if it contains `#`. |
+| `AUTH_SECRET` | yes | Random string (16+ characters) that signs login sessions |
 | `DEVICE_KEY` | no | If set, the jig must add `&key=<value>` to every request |
 | `NEXT_PUBLIC_BASE_URL` | no | Base URL shown on the Docs page |
 
 Never commit `.env.local`. It is ignored by git.
+
+Generate `AUTH_SECRET` with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. If the AUTH_ variables are missing, the site stays locked.
+
+The jig endpoints `/api/send` and `/api/send_ssr` do not use the login (the ESP32 cannot sign in). Protect them with `DEVICE_KEY` instead.
 
 ### Scripts
 
@@ -80,7 +88,7 @@ The sketch is in `firmware/konwert_mux_jig/`.
 ## Deploying to Vercel
 
 1. Import this repository in Vercel (framework: Next.js).
-2. Add the environment variables above. Use `MONGODB_DB=konwert_jig` for production.
+2. Add the environment variables above (including `AUTH_USERNAME`, `AUTH_PASSWORD` and `AUTH_SECRET`). Use `MONGODB_DB=konwert_jig` for production.
 3. In MongoDB Atlas, open Network Access and allow `0.0.0.0/0`. Vercel does not use fixed IP addresses.
 4. In Project Settings, Domains, add `jig.konwertindiamotors.com`. At the DNS provider, add a CNAME record with host `jig` pointing to `cname.vercel-dns.com` (or the value Vercel shows).
 
