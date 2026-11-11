@@ -12,7 +12,7 @@ const g = globalThis as unknown as { _mongo?: Promise<MongoClient>; _mongoReady?
 function client() {
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error("MONGODB_URI is not set");
-  g._mongo ??= new MongoClient(uri, { maxPoolSize: 5 }).connect();
+  g._mongo ??= new MongoClient(uri, { maxPoolSize: 5, serverSelectionTimeoutMS: 10000 }).connect();
   return g._mongo;
 }
 
