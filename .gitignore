@@ -1,0 +1,52 @@
+# ---- Dependencies ----
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+
+# ---- Next.js build output ----
+/.next/
+/out/
+/build
+next-env.d.ts
+*.tsbuildinfo
+
+# ---- Environment files (secrets: database password, device key) ----
+# Keep only the template .env.example in git.
+.env
+.env.*
+!.env.example
+
+# ---- Vercel ----
+.vercel
+
+# ---- Arduino / ESP32 secrets (Wi-Fi password) ----
+# Copy secrets.example.h to secrets.h locally. secrets.h is never committed.
+firmware/**/secrets.h
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ---- Testing / coverage ----
+/coverage
+
+# ---- Editors and OS files ----
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Local scratch files ----
+# Temporary files used while testing (screenshots, notes)
+/_*
+# Generated sample report and loose originals (the app uses assets/ and public/)
+/sample_report.pdf
+/letter_head.pdf
+/logo.png

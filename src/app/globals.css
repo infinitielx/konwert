@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* Dark mode is switched by a "dark" class on <html> (see ThemeToggle). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Brand palette taken from the Konwert logo: dark green, mustard gold, charcoal. */
+@theme {
+  --color-brand-50: #f2f7ef;
+  --color-brand-100: #e0eddb;
+  --color-brand-200: #c3dbb9;
+  --color-brand-500: #3f7d34;
+  --color-brand-600: #2f6b2a;
+  --color-brand-700: #265a23;
+  --color-brand-800: #1d4a1c;
+  --color-brand-900: #143514;
+  --color-gold-400: #ebc14a;
+  --color-gold-500: #e0b030;
+  --color-gold-600: #c4961c;
+  --color-charcoal: #3a3a3a;
+
+  /* Semantic colors: light values here, dark values in .dark below. */
+  --color-page: #f2f7ef;
+  --color-surface: #ffffff;
+  --color-ink: #3a3a3a;
+  --color-heading: #143514;
+  --color-line: #e0eddb;
+  --color-tint: #f2f7ef;
+  --color-muted: #64748b;
+  --color-accent: #2f6b2a;
+  --color-btn: #2f6b2a;
+  --color-btn-hover: #265a23;
+}
+
+.dark {
+  color-scheme: dark;
+  --color-page: #0d150e;
+  --color-surface: #162218;
+  --color-ink: #d9e3d5;
+  --color-heading: #e8f3e3;
+  --color-line: #2a3d2b;
+  --color-tint: #1b2b1d;
+  --color-muted: #9db0a0;
+  --color-accent: #84c974;
+  --color-btn: #2f6b2a;
+  --color-btn-hover: #3a7d33;
+}
+
+@layer base {
+  body { @apply bg-page text-ink antialiased transition-colors; }
+  h1, h2, h3 { @apply text-heading; }
+}
+
+@layer components {
+  .card { @apply mb-4 overflow-x-auto rounded-xl bg-surface p-3 shadow-sm ring-1 ring-line; }
+  .btn { @apply inline-block cursor-pointer rounded-md bg-btn px-3.5 py-1.5 text-sm font-medium text-white no-underline transition hover:bg-btn-hover; }
+  .btn-ghost { @apply inline-block rounded-md bg-charcoal px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-black dark:bg-slate-600 dark:hover:bg-slate-500; }
+  .btn-gold { @apply inline-block rounded-md bg-gold-500 px-3.5 py-1.5 text-sm font-semibold text-brand-900 transition hover:bg-gold-600; }
+  .tbl { @apply w-full border-collapse text-sm; }
+  .tbl th { @apply whitespace-nowrap border-b border-line bg-tint px-3 py-2.5 text-left font-semibold text-heading; }
+  .tbl td { @apply whitespace-nowrap border-b border-line px-3 py-2.5 text-left; }
+  .field { @apply rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-700; }
+  .ok { @apply font-bold text-green-700 dark:text-green-400; }
+  .bad { @apply font-bold text-red-600 dark:text-red-400; }
+  .pill-pass { @apply bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300; }
+  .pill-fail { @apply bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300; }
+  .note { @apply rounded-lg bg-amber-100 p-3 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200; }
+}
